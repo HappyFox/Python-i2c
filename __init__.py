@@ -16,6 +16,8 @@ class I2cBus(dict):
         self.bus = bus
         self.file_path = "/dev/i2c-%d" % self.bus
 
+        #TODO: verify that we can open the file here, so we fail early.
+
         dict.__init__(self)
 
     def __getitem__(self, key):
@@ -33,17 +35,20 @@ class I2cBus(dict):
 class I2cDevice(object):
 
     def __init__(self, file_path, addr):
-        self.file = posix.open(file_path, posix.O_RDWR)
+        self.fd = posix.open(file_path, posix.O_RDWR)
 
-        if ioctl(self.file, I2C_SLAVE, addr) != 0:
+        if ioctl(self.fd, I2C_SLAVE, addr) != 0:
             raise Exception() #TODO: add more exceptions.
 
     def __getitem__(self, key):
         addr = struct.pack('B', key)
-        if posix.write(self.file, addr) != 1:
+        if posix.write(self.fd, addr) != 1:
             raise Exception()
 
-        return posix.read(self.file, 1)
+        return posix.read(self.fd, 1)
 
-    def __setitem__(self, key):
-        pass
+    def __setitem__(self, key, value):
+        msg = struct.pack('BB', key, value)
+
+        if posix.write(self.fd, msg) != 2:
+            raise Exception()
