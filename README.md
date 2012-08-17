@@ -5,14 +5,13 @@ A simple library for i2c buses on embedded linux, like the beaglebone and Raspbe
 
 Usage :
 
-'
->>> import i2c
->>> bus = i2c.I2cBus(3)
->>> dev = bus[0x40]
->>> dev[0]
+```
+import i2c
+bus = i2c.I2cBus(3)
+dev = bus[0x40]
+dev[0]
 17
->>> dev[0] = 16
->>> dev[0]
+dev[0] = 16
+dev[0]
 16
->>> 
-'
+```
