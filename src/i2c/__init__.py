@@ -45,10 +45,18 @@ class I2cDevice(object):
         if posix.write(self.fd, addr) != 1:
             raise Exception()
 
-        return posix.read(self.fd, 1)
+        ret_val = struct.unpack('B', posix.read(self.fd, 1))[0]
+
+        return ret_val
 
     def __setitem__(self, key, value):
         msg = struct.pack('BB', key, value)
 
         if posix.write(self.fd, msg) != 2:
             raise Exception()
+
+    def __del__(self):
+        try:
+            posix.close(self.fd)
+        except AttributeError:
+            pass #Do nothing in this case.
