@@ -73,3 +73,15 @@ class BBI2cDevice(object):
             raise I2cError(pigpio.error_text(count))
 
         return data
+
+    def __setitem__(self, key, value):
+        self.check_key(key)
+        self.check_key(value)
+
+        cmd = [4, self.addr] # Set address
+        cmd += [2, 7, 2, key, value] # write the register then value .
+        cmd += [3, 0] # stop and end sequence
+
+        (count, data) = self.pi.bb_i2c_zip(self.handle, cmd)
+
+
